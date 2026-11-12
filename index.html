@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การทำความเข้าใจกลุ่มเป้าหมายลูกค้า (Empathize) - แบบฝึกหัดหน่วยที่ 2</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt & Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                        sarabun: ['Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        aqua: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --font-scale: 1;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(125deg, #f0f9ff 0%, #e0f2fe 35%, #dbeafe 70%, #eff6ff 100%);
+            background-size: 200% 200%;
+            animation: gradientFlow 16s ease infinite;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        /* Scalable Presentation Stage Content */
+        .scalable-stage {
+            font-size: calc(1rem * var(--font-scale));
+        }
+        
+        /* Custom Scrollbar */
+        .slide-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide-scroll::-webkit-scrollbar-track {
+            background: rgba(224, 242, 254, 0.5);
+            border-radius: 10px;
+        }
+        .slide-scroll::-webkit-scrollbar-thumb {
+            background: #7dd3fc;
+            border-radius: 10px;
+        }
+        .slide-scroll::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+
+        /* Slide Transition Animations */
+        .slide-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(18px) scale(0.985);
+            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .slide-container.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Staggered Card Entrance */
+        @keyframes cardPopIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .slide-container.active .stagger-item {
+            animation: cardPopIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .slide-container.active .stagger-1 { animation-delay: 0.05s; }
+        .slide-container.active .stagger-2 { animation-delay: 0.12s; }
+        .slide-container.active .stagger-3 { animation-delay: 0.19s; }
+        .slide-container.active .stagger-4 { animation-delay: 0.26s; }
+        .slide-container.active .stagger-5 { animation-delay: 0.33s; }
+        .slide-container.active .stagger-6 { animation-delay: 0.40s; }
+
+        /* Ambient Water Blobs & Floating Bubbles */
+        .water-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(75px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .bubble {
+            position: fixed;
+            bottom: -60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(125, 211, 252, 0.25));
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 1;
+            animation: riseBubble linear infinite;
+        }
+
+        @keyframes riseBubble {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.7;
+            }
+            85% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-115vh) translateX(25px) scale(1.15);
+                opacity: 0;
+            }
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 45px -12px rgba(2, 132, 199, 0.12), 0 4px 16px -2px rgba(2, 132, 199, 0.05);
+        }
+
+        .glass-card-hover {
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+            transform-style: preserve-3d;
+        }
+        .glass-card-hover:hover {
+            box-shadow: 0 18px 36px -8px rgba(2, 132, 199, 0.18);
+            border-color: #38bdf8;
+        }
+
+        /* Floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-9px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Virtual Laser Pointer */
+        body.laser-active, body.laser-active * {
+            cursor: none !important;
+        }
+        #laserDot {
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, #ff2a55 45%, rgba(255, 42, 85, 0) 75%);
+            box-shadow: 0 0 16px 5px rgba(255, 42, 85, 0.75), 0 0 30px 10px rgba(255, 42, 85, 0.35);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        .laser-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 42, 85, 0.55);
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            animation: fadeTrail 0.38s ease-out forwards;
+        }
+        @keyframes fadeTrail {
+            0% { opacity: 0.75; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+        }
+
+        /* Problem-Solution Highlight Connection */
+        .ps-highlight {
+            ring: 2px;
+            border-color: #0284c7 !important;
+            background-color: #e0f2fe !important;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.25);
+        }
+
+        /* Confetti Canvas */
+        #confettiCanvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9990;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 relative selection:bg-sky-200 selection:text-sky-900">
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Virtual Laser Dot -->
+    <div id="laserDot"></div>
+
+    <!-- Ambient Background Shapes & Floating Water Bubbles -->
+    <div class="water-blob bg-sky-300 w-96 h-96 -top-20 -left-20"></div>
+    <div class="water-blob bg-blue-300 w-[32rem] h-[32rem] -bottom-24 -right-24"></div>
+    <div class="water-blob bg-cyan-200 w-80 h-80 top-1/2 left-1/3"></div>
+    <div id="bubbleContainer" aria-hidden="true"></div>
+
+    <!-- Top Navigation & Presenter Toolbar -->
+    <header class="relative z-30 w-full bg-white/85 backdrop-blur-md border-b border-sky-100 px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+        <!-- Brand & Title -->
+        <div class="flex items-center gap-3">
+            <div onclick="goToSlide(1)" class="cursor-pointer w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 text-white flex items-center justify-center shadow-md shadow-sky-500/25 hover:scale-105 transition">
+                <i class="fa-solid fa-droplet text-base"></i>
+            </div>
+            <div>
+                <p class="font-heading font-bold text-xs sm:text-sm md:text-base text-slate-800 leading-tight">การทำความเข้าใจกลุ่มเป้าหมายลูกค้า (Empathize)</p>
+                <p class="text-[11px] sm:text-xs text-sky-600 font-medium">แบบฝึกหัดหน่วยที่ 2 | ธุรกิจน้ำดื่มสะอาดภายในโรงเรียน</p>
+            </div>
+        </div>
+
+        <!-- Presenter Tools & Controls -->
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <!-- Presentation Stopwatch Timer -->
+            <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-xs font-heading">
+                <i class="fa-regular fa-clock text-sky-600"></i>
+                <span id="timerDisplay" class="font-semibold text-slate-700 w-11 text-center">00:00</span>
+                <button id="timerToggleBtn" onclick="toggleTimer()" class="w-6 h-6 rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center transition" title="เริ่ม/หยุด จับเวลา">
+                    <i class="fa-solid fa-play text-[10px]"></i>
+                </button>
+                <button onclick="resetTimer()" class="w-6 h-6 rounded-lg hover:bg-slate-200 text-slate-500 flex items-center justify-center transition" title="รีเซ็ตเวลา">
+                    <i class="fa-solid fa-rotate-right text-[10px]"></i>
+                </button>
+            </div>
+
+            <!-- Font Size Zoom Controls -->
+            <div class="hidden sm:flex items-center bg-slate-50 border border-slate-200 rounded-xl p-0.5">
+                <button onclick="adjustFontSize(-0.07)" class="px-2 py-1 rounded-lg hover:bg-white text-slate-600 hover:text-sky-700 text-xs font-heading font-bold transition" title="ลดขนาดตัวอักษร">A-</button>
+                <button onclick="adjustFontSize(0)" class="px-1.5 py-1 text-[11px] text-slate-400 hover:text-slate-600 font-heading" title="ขนาดปกติ">100%</button>
+                <button onclick="adjustFontSize(0.07)" class="px-2 py-1 rounded-lg hover:bg-white text-slate-600 hover:text-sky-700 text-xs font-heading font-bold transition" title="เพิ่มขนาดตัวอักษร">A+</button>
+            </div>
+
+            <!-- Virtual Laser Pointer Toggle -->
+            <button id="laserBtn" onclick="toggleLaser()" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 hover:border-rose-300 text-xs font-heading font-medium flex items-center gap-1.5 transition shadow-sm" title="พอยเตอร์เลเซอร์ (กดปุ่ม L)">
+                <i class="fa-solid fa-wand-magic-sparkles text-rose-500"></i>
+                <span class="hidden md:inline">เลเซอร์</span>
+            </button>
+
+            <!-- Speaker Notes Toggle -->
+            <button id="notesBtn" onclick="toggleNotes()" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 hover:border-amber-300 text-xs font-heading font-medium flex items-center gap-1.5 transition shadow-sm" title="สคริปต์คำพูดผู้บรรยาย (กดปุ่ม N)">
+                <i class="fa-solid fa-note-sticky text-amber-500"></i>
+                <span class="hidden md:inline">สคริปต์พูด</span>
+            </button>
+
+            <!-- Slide Counter Pill -->
+            <span id="slideCounter" class="px-3 py-1 rounded-full bg-gradient-to-r from-sky-600 to-blue-600 text-white font-heading font-semibold text-xs shadow-sm">
+                1 / 9
+            </span>
+            
+            <!-- Table of Contents Button -->
+            <button onclick="toggleTOC()" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-300 text-xs font-heading font-medium flex items-center gap-1.5 transition shadow-sm" title="สารบัญสไลด์ (กดปุ่ม M)">
+                <i class="fa-solid fa-grid-2 text-sky-600"></i>
+                <i class="fa-solid fa-list-ul text-sky-600"></i>
+                <span class="hidden sm:inline">สารบัญ</span>
+            </button>
+
+            <!-- Fullscreen Button -->
+            <button onclick="toggleFullScreen()" class="p-2 rounded-xl bg-white hover:bg-sky-50 text-slate-600 hover:text-sky-700 border border-slate-200 hover:border-sky-300 text-xs transition shadow-sm" title="เต็มหน้าจอ (กดปุ่ม F)">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+
+        <!-- Segmented Interactive Progress Bar -->
+        <div id="segmentedProgress" class="w-full flex gap-1 pt-1.5">
+            <!-- Populated by JS -->
+        </div>
+    </header>
+
+    <!-- Main Presentation Stage -->
+    <main class="scalable-stage relative z-10 flex-1 flex items-center justify-center p-3 sm:p-5 md:p-7 w-full max-w-7xl mx-auto">
+
+        <!-- =====================================================================
+             SLIDE 1: หน้าปก (Title Slide)
+             ===================================================================== -->
+        <section id="slide-1" class="slide-container active flex-col items-center justify-center text-center w-full min-h-[73vh] glass-card rounded-3xl p-6 sm:p-10 md:p-14 relative overflow-hidden">
+            <!-- Decorative corner water waves -->
+            <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-sky-200/60 to-transparent rounded-bl-full pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-blue-200/60 to-transparent rounded-tr-full pointer-events-none"></div>
+
+            <div class="stagger-item stagger-1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100/95 border border-sky-200 text-sky-800 font-heading font-semibold text-xs sm:text-sm mb-5 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+                <span>แบบฝึกหัดหน่วยที่ 2 • Design Thinking & Entrepreneurship</span>
+            </div>
+
+            <div class="stagger-item stagger-2 w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-blue-600 via-sky-500 to-cyan-400 text-white flex items-center justify-center text-3xl sm:text-4xl shadow-xl shadow-sky-500/30 mb-5 animate-float">
+                <i class="fa-solid fa-hand-holding-droplet"></i>
+            </div>
+
+            <h1 class="stagger-item stagger-2 font-heading font-extrabold text-3xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-blue-900 to-sky-700 leading-tight mb-3 max-w-4xl">
+                การทำความเข้าใจกลุ่มเป้าหมายลูกค้า
+                <span class="block text-2xl sm:text-4xl md:text-5xl text-sky-600 mt-1">(Empathize)</span>
+            </h1>
+
+            <p class="stagger-item stagger-3 font-heading font-medium text-base sm:text-xl text-slate-600 max-w-3xl leading-relaxed mb-7">
+                การวิเคราะห์ลูกค้าเชิงลึกและพัฒนา <span class="text-sky-700 font-semibold underline decoration-sky-300 decoration-2 underline-offset-4">ธุรกิจน้ำดื่มสะอาดและบริการเติมน้ำดื่มภายในโรงเรียน</span>
+            </p>
+
+            <!-- Interactive Quick-Jump Topic Cards -->
+            <div class="stagger-item stagger-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full max-w-4xl mb-8 text-left">
+                <button onclick="goToSlide(2)" class="tilt-card group p-3 rounded-2xl bg-white/90 hover:bg-sky-50 border border-sky-100 hover:border-sky-300 shadow-sm transition text-left">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] font-heading font-bold text-sky-600">ตอนที่ 1</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-sky-600"></i>
+                    </div>
+                    <p class="font-heading font-semibold text-xs sm:text-sm text-slate-800">ความรู้พื้นฐาน Empathize</p>
+                </button>
+                <button onclick="goToSlide(3)" class="tilt-card group p-3 rounded-2xl bg-white/90 hover:bg-sky-50 border border-sky-100 hover:border-sky-300 shadow-sm transition text-left">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] font-heading font-bold text-blue-600">ตอนที่ 2</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-blue-600"></i>
+                    </div>
+                    <p class="font-heading font-semibold text-xs sm:text-sm text-slate-800">ผู้ใช้งานสุดโต่ง (Extreme)</p>
+                </button>
+                <button onclick="goToSlide(4)" class="tilt-card group p-3 rounded-2xl bg-white/90 hover:bg-sky-50 border border-sky-100 hover:border-sky-300 shadow-sm transition text-left">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] font-heading font-bold text-cyan-600">ตอนที่ 3 - 4</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-cyan-600"></i>
+                    </div>
+                    <p class="font-heading font-semibold text-xs sm:text-sm text-slate-800">วิธีเก็บข้อมูล & วิเคราะห์</p>
+                </button>
+                <button onclick="goToSlide(6)" class="tilt-card group p-3 rounded-2xl bg-white/90 hover:bg-sky-50 border border-sky-100 hover:border-sky-300 shadow-sm transition text-left">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] font-heading font-bold text-indigo-600">ตอนที่ 5 - 6</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-indigo-600"></i>
+                    </div>
+                    <p class="font-heading font-semibold text-xs sm:text-sm text-slate-800">Empathy Map & ปฏิบัติจริง</p>
+                </button>
+            </div>
+
+            <button onclick="nextSlide()" class="stagger-item stagger-5 group px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 hover:from-sky-500 hover:to-blue-600 text-white font-heading font-semibold text-base sm:text-lg shadow-xl shadow-blue-600/30 hover:shadow-blue-600/45 transition-all duration-300 flex items-center gap-3 transform hover:-translate-y-1">
+                <span>เริ่มการนำเสนอ</span>
+                <i class="fa-solid fa-arrow-right group-hover:translate-x-1.5 transition-transform"></i>
+            </button>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 2: ตอนที่ 1 ความรู้ความเข้าใจเบื้องต้น (Empathize Basics)
+             ===================================================================== -->
+        <section id="slide-2" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8 md:p-9">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-sky-600 bg-sky-100 px-3 py-1 rounded-lg">ตอนที่ 1 • พื้นฐานแนวคิด</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">ความรู้ความเข้าใจเบื้องต้น (Empathize Basics)</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1">
+                <!-- Left Column: Definition & 3 Importances -->
+                <div class="lg:col-span-7 flex flex-col gap-4">
+                    <!-- Definition Box -->
+                    <div class="stagger-item stagger-1 bg-gradient-to-r from-sky-600 to-blue-700 text-white rounded-2xl p-5 shadow-md relative overflow-hidden">
+                        <i class="fa-solid fa-quote-right absolute right-4 bottom-2 text-6xl text-white/10 pointer-events-none"></i>
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <i class="fa-solid fa-lightbulb text-amber-300 text-lg"></i>
+                            <h3 class="font-heading font-semibold text-lg">การทำความเข้าใจกลุ่มเป้าหมายลูกค้า (Empathize) หมายถึงอะไร?</h3>
+                        </div>
+                        <p class="text-sky-50 text-sm sm:text-base leading-relaxed">
+                            กระบวนการหรือความสามารถในการ <strong>“เอาใจเขามาใส่ใจเรา”</strong> เพื่อทำความเข้าใจความรู้สึก ความคิด ความต้องการ ปัญหา และพฤติกรรมของลูกค้าหรือกลุ่มเป้าหมายอย่างลึกซึ้ง <strong>โดยปราศจากอคติ</strong> เพื่อมองเห็นมุมมองเดียวกับที่ลูกค้ามอง
+                        </p>
+                    </div>
+
+                    <!-- 3 Importances -->
+                    <div class="stagger-item stagger-2 bg-white rounded-2xl p-5 border border-sky-100 shadow-sm flex-1">
+                        <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-star text-sky-500"></i>
+                            <span>ความสำคัญ 3 ประการต่อการดำเนินธุรกิจ</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="tilt-card p-3.5 rounded-xl bg-sky-50/80 border border-sky-100 glass-card-hover">
+                                <div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-heading font-bold text-sm mb-2 shadow-sm">1</div>
+                                <h4 class="font-heading font-semibold text-sm text-sky-900 mb-1">พัฒนาสินค้าตรงจุด</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">ออกแบบผลิตภัณฑ์และบริการที่แก้ปัญหาให้ลูกค้าได้อย่างแม่นยำ ลดความเสี่ยงลงทุนผิดพลาด</p>
+                            </div>
+                            <div class="tilt-card p-3.5 rounded-xl bg-blue-50/80 border border-blue-100 glass-card-hover">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-heading font-bold text-sm mb-2 shadow-sm">2</div>
+                                <h4 class="font-heading font-semibold text-sm text-blue-900 mb-1">สร้างความได้เปรียบ</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">เข้าใจความต้องการที่คู่แข่งอาจยังมองไม่เห็น ทำให้สร้างจุดเด่นและเอกลักษณ์ที่แตกต่างได้</p>
+                            </div>
+                            <div class="tilt-card p-3.5 rounded-xl bg-indigo-50/80 border border-indigo-100 glass-card-hover">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-heading font-bold text-sm mb-2 shadow-sm">3</div>
+                                <h4 class="font-heading font-semibold text-sm text-indigo-900 mb-1">ความภักดีต่อแบรนด์</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">(Brand Loyalty) ลูกค้าพึงพอใจและผูกพัน เพราะรู้สึกว่าแบรนด์ใส่ใจและเข้าใจอย่างแท้จริง</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Stated vs Real Needs & Risk -->
+                <div class="lg:col-span-5 flex flex-col gap-4">
+                    <div class="stagger-item stagger-3 bg-white rounded-2xl p-5 border border-sky-100 shadow-sm flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-layer-group text-blue-600"></i>
+                                    <span>เจาะลึกความต้องการลูกค้า</span>
+                                </h3>
+                                <button onclick="toggleNeedsDeepDive()" class="px-2.5 py-1 rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-800 font-heading font-semibold text-xs transition flex items-center gap-1">
+                                    <i class="fa-solid fa-eye"></i> <span id="needsToggleText">เน้นความต้องการแท้จริง</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Stated Needs -->
+                            <div id="statedNeedBox" class="p-3.5 rounded-xl bg-slate-50 border-l-4 border-slate-400 mb-3 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-heading font-semibold text-sm text-slate-800">1. Stated Needs (ความต้องการที่พูดออกมา)</span>
+                                    <i class="fa-regular fa-comment-dots text-slate-500"></i>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600">
+                                    สิ่งที่ลูกค้าบอกหรือแสดงออกทางคำพูดในผิวเผิน เช่น <em>“อยากได้สินค้าที่มีราคาถูกที่สุด”</em>
+                                </p>
+                            </div>
+
+                            <!-- Real Needs -->
+                            <div id="realNeedBox" class="p-3.5 rounded-xl bg-sky-50 border-l-4 border-sky-600 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-heading font-semibold text-sm text-sky-900">2. Real / Underlying Needs (ความต้องการที่แท้จริง)</span>
+                                    <i class="fa-solid fa-magnifying-glass-chart text-sky-600"></i>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-700">
+                                    เบื้องหลังที่ลูกค้าไม่ได้พูดตรงๆ เช่น แท้จริงแล้วต้องการสินค้าที่ <strong>“ราคาคุ้มค่า ทนทาน และมีความปลอดภัยสูง”</strong> ไม่ใช่แค่ราคาถูกที่สุดเพียงอย่างเดียว
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Warning Box -->
+                        <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-heading font-semibold text-xs sm:text-sm text-rose-900">ผลเสียหากไม่ศึกษาลูกค้าก่อนผลิต</h4>
+                                <p class="text-xs text-rose-800 leading-relaxed mt-0.5">
+                                    ผลิตสินค้าออกมาแล้วขายไม่ได้ สินค้าค้างสต็อก เงินทุนจม เสียเวลาและงบประมาณโดยเปล่าประโยชน์ แข่งขันไม่ได้ และอาจต้องปิดกิจการในที่สุด
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 3: ตอนที่ 2 ผู้ใช้งานสุดโต่ง (Extreme Users)
+             ===================================================================== -->
+        <section id="slide-3" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8 md:p-9">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-blue-600 bg-blue-100 px-3 py-1 rounded-lg">ตอนที่ 2 • มุมมองเชิงลึก</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">ผู้ใช้งานสุดโต่ง (Extreme Users)</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-users-rays"></i>
+                </div>
+            </div>
+
+            <!-- Top Row: Definition & Why Study -->
+            <div class="stagger-item stagger-1 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-sky-100 shadow-sm">
+                    <h3 class="font-heading font-bold text-base text-sky-800 mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-user-astronaut text-sky-500"></i>
+                        <span>ผู้ใช้งานสุดโต่ง (Extreme Users) หมายถึงอะไร?</span>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        ผู้ที่มีพฤติกรรม ความต้องการ หรือข้อจำกัดในการใช้งาน <strong>แตกต่างจากคนทั่วไปอย่างชัดเจน</strong> เช่น ใช้งานบ่อยมาก ใช้งานน้อยมาก หรือมีความต้องการเฉพาะด้าน
+                    </p>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-sky-100 shadow-sm">
+                    <h3 class="font-heading font-bold text-base text-blue-800 mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-blue-500"></i>
+                        <span>ทำไมการศึกษาผู้ใช้งานสุดโต่งจึงช่วยให้เข้าใจลูกค้ามากขึ้น?</span>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        เพราะมักพบปัญหาหรือมีความต้องการที่ชัดเจน ทำให้ผู้ประกอบการมองเห็น <strong>ข้อบกพร่องและอุปสรรค</strong> ในการใช้สินค้าและบริการ และนำไปพัฒนาสินค้าให้ตอบสนองลูกค้าได้ดียิ่งขึ้น
+                    </p>
+                </div>
+            </div>
+
+            <!-- Middle Row: Interactive 3 Examples -->
+            <div class="stagger-item stagger-2 mb-4">
+                <div class="flex items-center justify-between mb-2.5">
+                    <h3 class="font-heading font-bold text-sm sm:text-base text-slate-700">ตัวอย่างผู้ใช้งานสุดโต่ง 3 กลุ่ม (คลิกที่การ์ดเพื่อเน้นจุดเด่น)</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div onclick="selectExtremeCard(this)" class="extreme-card cursor-pointer tilt-card bg-gradient-to-b from-sky-50 to-white rounded-2xl p-4 border-2 border-sky-200 glass-card-hover transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center text-lg shadow-sm">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <h4 class="font-heading font-bold text-sm sm:text-base text-slate-800">1. ผู้ใช้งานประจำมาก</h4>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            มีประสบการณ์สูง ใช้บริการบ่อยครั้ง ต้องการความรวดเร็วสูงสุดในการใช้งาน
+                        </p>
+                    </div>
+
+                    <div onclick="selectExtremeCard(this)" class="extreme-card cursor-pointer tilt-card bg-gradient-to-b from-blue-50 to-white rounded-2xl p-4 border-2 border-blue-200 glass-card-hover transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-sm">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <h4 class="font-heading font-bold text-sm sm:text-base text-slate-800">2. ผู้ใช้งานมือใหม่</h4>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            มีประสบการณ์น้อย ไม่คุ้นเคยกับระบบ และต้องการคำแนะนำที่เข้าใจง่าย
+                        </p>
+                    </div>
+
+                    <div onclick="selectExtremeCard(this)" class="extreme-card cursor-pointer tilt-card bg-gradient-to-b from-indigo-50 to-white rounded-2xl p-4 border-2 border-indigo-200 glass-card-hover transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow-sm">
+                                <i class="fa-solid fa-universal-access"></i>
+                            </div>
+                            <h4 class="font-heading font-bold text-sm sm:text-base text-slate-800">3. ผู้มีข้อจำกัดทางร่างกาย</h4>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            เช่น ผู้สูงอายุหรือผู้พิการ ต้องการตัวอักษรขนาดใหญ่ ปุ่มมองเห็นชัด หรือเมนูที่ใช้งานสะดวก
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Case Study & Comparison -->
+            <div class="stagger-item stagger-3 grid grid-cols-1 lg:grid-cols-2 gap-4 mt-auto">
+                <div class="bg-sky-900 text-white rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-md">
+                    <div class="w-10 h-10 rounded-xl bg-sky-700 text-sky-200 flex items-center justify-center text-lg shrink-0 mt-0.5">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-semibold text-sm sm:text-base text-sky-200">กรณีศึกษา: แอปพลิเคชันสั่งอาหารออนไลน์</h4>
+                        <p class="text-xs sm:text-sm text-slate-100 leading-relaxed mt-1">
+                            ควรศึกษา <strong>ผู้สูงอายุหรือผู้ไม่ถนัดเทคโนโลยี</strong>, <strong>ผู้ที่สั่งอาหารออนไลน์เป็นประจำ</strong> และ <strong>ผู้ที่มีข้อจำกัดด้านการมองเห็นหรือการเคลื่อนไหว</strong> เพื่อออกแบบแอปให้ใช้งานง่าย สะดวก และเหมาะกับคนหลายกลุ่ม
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-sky-200 flex items-start gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-lg shrink-0 mt-0.5">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-semibold text-sm sm:text-base text-slate-800">ผู้ใช้งานทั่วไป vs ผู้ใช้งานสุดโต่ง แตกต่างกันอย่างไร?</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mt-1">
+                            <strong>ผู้ใช้งานทั่วไป</strong> มีพฤติกรรมและความต้องการใกล้เคียงคนส่วนใหญ่ ส่วน <strong>ผู้ใช้งานสุดโต่ง</strong> มีพฤติกรรมหรือข้อจำกัดแตกต่างอย่างชัดเจน การศึกษาทั้งสองกลุ่มช่วยให้เข้าใจลูกค้าได้ครอบคลุมมากขึ้น
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 4: ตอนที่ 3 วิธีการสร้างความเข้าใจกลุ่มเป้าหมาย (Data Collection)
+             ===================================================================== -->
+        <section id="slide-4" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8 md:p-9">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-cyan-700 bg-cyan-100 px-3 py-1 rounded-lg">ตอนที่ 3 • เครื่องมือสำรวจ</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">วิธีการสร้างความเข้าใจกลุ่มเป้าหมายลูกค้า</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-clipboard-question"></i>
+                </div>
+            </div>
+
+            <!-- 5 Methods Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mb-5">
+                <div class="stagger-item stagger-1 tilt-card bg-white rounded-2xl p-4 border border-sky-100 shadow-sm glass-card-hover flex flex-col">
+                    <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <span class="text-xs font-heading font-bold text-sky-600">วิธีที่ 1</span>
+                    <h3 class="font-heading font-bold text-base text-slate-800 mb-1.5">การสัมภาษณ์<br><span class="text-xs font-normal text-slate-500">(Interview)</span></h3>
+                    <p class="text-xs text-slate-600 leading-relaxed flex-1">
+                        การพูดคุยกับลูกค้าเพื่อเก็บข้อมูล ควรเตรียมคำถามเกี่ยวกับความต้องการ ปัญหา และความคิดเห็นของลูกค้า
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-2 tilt-card bg-white rounded-2xl p-4 border border-sky-100 shadow-sm glass-card-hover flex flex-col">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <span class="text-xs font-heading font-bold text-blue-600">วิธีที่ 2</span>
+                    <h3 class="font-heading font-bold text-base text-slate-800 mb-1.5">การสังเกตพฤติกรรม<br><span class="text-xs font-normal text-slate-500">(Observation)</span></h3>
+                    <p class="text-xs text-slate-600 leading-relaxed flex-1">
+                        ช่วยให้เข้าใจพฤติกรรมจริงของลูกค้า เช่น ความสนใจ วิธีเลือกซื้อ และการใช้สินค้าจริง
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-3 tilt-card bg-white rounded-2xl p-4 border border-sky-100 shadow-sm glass-card-hover flex flex-col">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <span class="text-xs font-heading font-bold text-cyan-600">วิธีที่ 3</span>
+                    <h3 class="font-heading font-bold text-base text-slate-800 mb-1.5">การใช้แบบสอบถาม<br><span class="text-xs font-normal text-slate-500">(Questionnaire)</span></h3>
+                    <p class="text-xs text-slate-600 leading-relaxed flex-1">
+                        เหมาะกับการเก็บข้อมูลจากลูกค้าจำนวนมาก เพื่อทราบความต้องการและความคิดเห็นในภาพรวม
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-4 tilt-card bg-white rounded-2xl p-4 border border-sky-100 shadow-sm glass-card-hover flex flex-col">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-flask-vial"></i>
+                    </div>
+                    <span class="text-xs font-heading font-bold text-indigo-600">วิธีที่ 4</span>
+                    <h3 class="font-heading font-bold text-base text-slate-800 mb-1.5">การทดลองใช้งานจริง<br><span class="text-xs font-normal text-slate-500">(User Testing)</span></h3>
+                    <p class="text-xs text-slate-600 leading-relaxed flex-1">
+                        ช่วยให้ทราบว่าสินค้าใช้งานง่ายหรือไม่ มีปัญหาอะไร และควรปรับปรุงส่วนใด
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-5 tilt-card bg-white rounded-2xl p-4 border border-sky-100 shadow-sm glass-card-hover flex flex-col">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-people-group"></i>
+                    </div>
+                    <span class="text-xs font-heading font-bold text-teal-600">วิธีที่ 5</span>
+                    <h3 class="font-heading font-bold text-base text-slate-800 mb-1.5">การสนทนากลุ่ม<br><span class="text-xs font-normal text-slate-500">(Focus Group)</span></h3>
+                    <p class="text-xs text-slate-600 leading-relaxed flex-1">
+                        ช่วยให้ได้รับความคิดเห็นที่หลากหลายจากลูกค้า และสามารถนำไปพัฒนาสินค้าได้
+                    </p>
+                </div>
+            </div>
+
+            <!-- Additional Activity Box -->
+            <div class="stagger-item stagger-6 bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50 rounded-2xl p-5 border border-sky-200 mt-auto">
+                <div class="flex items-center gap-2.5 mb-3">
+                    <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-heading font-semibold text-xs">กิจกรรมเพิ่มเติม</span>
+                    <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800">หากต้องการเปิดร้านเครื่องดื่มภายในวิทยาลัย จะเลือกใช้วิธีเก็บข้อมูลใดบ้าง?</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    <div class="bg-white/95 rounded-xl p-3.5 border border-sky-100 flex items-start gap-3 shadow-sm">
+                        <i class="fa-solid fa-microphone-lines text-sky-600 text-lg mt-0.5"></i>
+                        <div>
+                            <h4 class="font-heading font-bold text-sm text-slate-800">1. การสัมภาษณ์</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">เพื่อสอบถามความต้องการของนักเรียนโดยตรง</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/95 rounded-xl p-3.5 border border-sky-100 flex items-start gap-3 shadow-sm">
+                        <i class="fa-solid fa-square-poll-vertical text-blue-600 text-lg mt-0.5"></i>
+                        <div>
+                            <h4 class="font-heading font-bold text-sm text-slate-800">2. การใช้แบบสอบถาม</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">เพื่อสำรวจรสชาติและราคาที่ลูกค้าต้องการ</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/95 rounded-xl p-3.5 border border-sky-100 flex items-start gap-3 shadow-sm">
+                        <i class="fa-solid fa-binoculars text-indigo-600 text-lg mt-0.5"></i>
+                        <div>
+                            <h4 class="font-heading font-bold text-sm text-slate-800">3. การสังเกตพฤติกรรม</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">เพื่อดูช่วงเวลาที่นักเรียนมาซื้อเครื่องดื่มและเมนูที่นิยม</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 5: ตอนที่ 4 การวิเคราะห์กลุ่มเป้าหมายลูกค้า (ร้านเครื่องดื่มในวิทยาลัย)
+             ===================================================================== -->
+        <section id="slide-5" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8 md:p-9">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg">ตอนที่ 4 • กรณีศึกษา</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">การวิเคราะห์กลุ่มเป้าหมายลูกค้า: ร้านเครื่องดื่มในวิทยาลัย</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-mug-saucer"></i>
+                </div>
+            </div>
+
+            <!-- Scenario Banner -->
+            <div class="stagger-item stagger-1 bg-gradient-to-r from-slate-800 to-blue-900 text-white rounded-2xl p-4 sm:p-5 mb-5 shadow-md">
+                <div class="flex items-center gap-2 text-sky-300 font-heading font-semibold text-xs sm:text-sm mb-2">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>สถานการณ์: นักเรียนกลุ่มหนึ่งต้องการพัฒนาธุรกิจร้านเครื่องดื่มภายในวิทยาลัย จากการสอบถามเพื่อนนักเรียนพบว่า</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs sm:text-sm text-slate-100">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-sky-400"></i> นักเรียนส่วนใหญ่มีเวลาพักค่อนข้างจำกัด</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-coins text-sky-400"></i> ต้องการเครื่องดื่มที่มีราคาประหยัด</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-person-walking-dashed-line-arrow-right text-sky-400"></i> ไม่ต้องการต่อคิวซื้อเป็นเวลานาน</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-sky-400"></i> ต้องการสั่งเครื่องดื่มล่วงหน้าผ่านโทรศัพท์มือถือ</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-sliders text-sky-400"></i> ต้องการเลือกความหวานและท็อปปิงได้</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-heart text-sky-400"></i> บางคนต้องการเครื่องดื่มเพื่อสุขภาพและน้ำตาลน้อย</div>
+                </div>
+            </div>
+
+            <!-- 5 Dimensions Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1">
+                <div class="stagger-item stagger-2 tilt-card bg-white rounded-2xl p-4 border border-sky-100 shadow-sm glass-card-hover">
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <span class="w-7 h-7 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center">1</span>
+                        <h3 class="font-heading font-bold text-base text-slate-800">กลุ่มเป้าหมายหลัก</h3>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        นักเรียนและนักศึกษาในวิทยาลัยที่ต้องการซื้อเครื่องดื่มในราคาประหยัด
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-3 tilt-card bg-white rounded-2xl p-4 border border-rose-100 shadow-sm glass-card-hover">
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <span class="w-7 h-7 rounded-lg bg-rose-500 text-white font-heading font-bold text-xs flex items-center justify-center">2</span>
+                        <h3 class="font-heading font-bold text-base text-slate-800">ปัญหาและอุปสรรค</h3>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        มีเวลาพักค่อนข้างจำกัด ราคาเครื่องดื่มบางร้านแพง และต้องเสียเวลาต่อคิวซื้อ
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-4 tilt-card bg-white rounded-2xl p-4 border border-blue-100 shadow-sm glass-card-hover">
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <span class="w-7 h-7 rounded-lg bg-blue-600 text-white font-heading font-bold text-xs flex items-center justify-center">3</span>
+                        <h3 class="font-heading font-bold text-base text-slate-800">ความต้องการพิเศษ</h3>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        ต้องการเครื่องดื่มราคาประหยัด รสชาติอร่อย มีหลายเมนู และสามารถสั่งล่วงหน้าผ่านโทรศัพท์ได้
+                    </p>
+                </div>
+
+                <div class="stagger-item stagger-5 tilt-card bg-white rounded-2xl p-4 border border-amber-100 shadow-sm glass-card-hover">
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <span class="w-7 h-7 rounded-lg bg-amber-500 text-white font-heading font-bold text-xs flex items-center justify-center">4</span>
+                        <h3 class="font-heading font-bold text-base text-slate-800">ปัจจัยตัดสินใจซื้อ</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-xs font-medium">ราคา</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-xs font-medium">รสชาติ</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-xs font-medium">ความสะดวกในการซื้อ</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-xs font-medium">คุณภาพของเครื่องดื่ม</span>
+                    </div>
+                </div>
+
+                <div class="stagger-item stagger-6 tilt-card md:col-span-2 bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl p-4 border border-sky-200 shadow-sm glass-card-hover">
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center">5</span>
+                        <h3 class="font-heading font-bold text-base text-slate-800">แนวทางปรับปรุงสินค้าและบริการ</h3>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        จัดทำเครื่องดื่มหลายรสชาติ ตั้งราคาที่เหมาะสม มีบริการสั่งล่วงหน้าผ่านโทรศัพท์ และมีตัวเลือกเครื่องดื่มเพื่อสุขภาพ
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 6: ตอนที่ 5 แผนภูมิแห่งความเข้าใจ (Empathy Map) - ธุรกิจน้ำดื่ม
+             ===================================================================== -->
+        <section id="slide-6" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-3 mb-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-heading font-bold uppercase tracking-wider text-sky-700 bg-sky-100 px-2.5 py-0.5 rounded-lg">ตอนที่ 5 • Empathy Map</span>
+                        <span class="text-xs text-slate-600 font-medium"><i class="fa-solid fa-users text-sky-500 mr-1"></i>กลุ่มเป้าหมาย: <strong>นักเรียนระดับมัธยมศึกษา ครู และบุคลากรภายในโรงเรียน</strong></span>
+                    </div>
+                    <h2 class="font-heading font-bold text-xl sm:text-2xl md:text-3xl text-slate-900 mt-1">แผนภูมิแห่งความเข้าใจ (Empathy Map) <span class="text-xs font-normal text-sky-600 ml-1">(คลิกที่ช่องเพื่อขยายอ่านชัดๆ)</span></h2>
+                </div>
+                <!-- Interactive Filter Pills -->
+                <div class="flex flex-wrap gap-1.5 text-xs">
+                    <button onclick="highlightEmpathy('all', this)" class="empathy-btn px-2.5 py-1 rounded-lg bg-sky-600 text-white font-heading font-medium transition shadow-sm">ทั้งหมด (6 ช่อง)</button>
+                    <button onclick="highlightEmpathy('core', this)" class="empathy-btn px-2.5 py-1 rounded-lg bg-white hover:bg-sky-50 text-slate-600 border border-slate-200 font-heading font-medium transition">Say / Think / Do / Feel</button>
+                    <button onclick="highlightEmpathy('paingain', this)" class="empathy-btn px-2.5 py-1 rounded-lg bg-white hover:bg-sky-50 text-slate-600 border border-slate-200 font-heading font-medium transition">Pain & Gain</button>
+                </div>
+            </div>
+
+            <!-- 6-Box Interactive Grid with Click-to-Zoom -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 flex-1">
+                <!-- SAY -->
+                <div data-group="core" onclick="zoomEmpathyCard(this)" class="stagger-item stagger-1 empathy-card cursor-pointer group bg-white rounded-2xl p-4 border-t-4 border-sky-500 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-base text-sky-800 flex items-center gap-2">
+                            <i class="fa-solid fa-comment-dots text-sky-500"></i> SAY (สิ่งที่ลูกค้าพูด)
+                        </h3>
+                        <i class="fa-solid fa-magnifying-glass-plus text-slate-300 group-hover:text-sky-500 text-xs transition"></i>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+                        <li>อยากได้น้ำดื่มที่สะอาด มีคุณภาพ และปลอดภัยต่อสุขภาพ</li>
+                        <li>อยากให้น้ำดื่มมีราคาถูก เพราะต้องซื้อเป็นประจำทุกวัน</li>
+                        <li>อยากให้มีน้ำดื่มเย็นจำหน่ายในช่วงพักกลางวัน</li>
+                        <li>อยากให้ร้านน้ำดื่มเปิดบริการตลอดเวลาพัก</li>
+                        <li>อยากให้มีน้ำดื่มหลายขนาดให้เลือกตามความต้องการ</li>
+                    </ul>
+                </div>
+
+                <!-- THINK -->
+                <div data-group="core" onclick="zoomEmpathyCard(this)" class="stagger-item stagger-2 empathy-card cursor-pointer group bg-white rounded-2xl p-4 border-t-4 border-blue-600 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-base text-blue-800 flex items-center gap-2">
+                            <i class="fa-solid fa-brain text-blue-600"></i> THINK (สิ่งที่ลูกค้าคิด)
+                        </h3>
+                        <i class="fa-solid fa-magnifying-glass-plus text-slate-300 group-hover:text-blue-600 text-xs transition"></i>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+                        <li>น้ำดื่มที่ซื้อมีความสะอาดและผ่านมาตรฐานหรือไม่</li>
+                        <li>ราคาน้ำดื่มเหมาะสมกับเงินที่ได้รับมาโรงเรียนหรือไม่</li>
+                        <li>หากซื้อน้ำดื่มทุกวันจะทำให้มีค่าใช้จ่ายมากขึ้นหรือไม่</li>
+                        <li>อยากให้มีบริการเติมน้ำใส่ขวดส่วนตัวเพื่อลดค่าใช้จ่าย</li>
+                        <li>ต้องการร้านน้ำดื่มที่อยู่ใกล้ห้องเรียนและโรงอาหาร</li>
+                    </ul>
+                </div>
+
+                <!-- DO -->
+                <div data-group="core" onclick="zoomEmpathyCard(this)" class="stagger-item stagger-3 empathy-card cursor-pointer group bg-white rounded-2xl p-4 border-t-4 border-cyan-500 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-base text-cyan-800 flex items-center gap-2">
+                            <i class="fa-solid fa-person-running text-cyan-500"></i> DO (สิ่งที่ลูกค้าทำ)
+                        </h3>
+                        <i class="fa-solid fa-magnifying-glass-plus text-slate-300 group-hover:text-cyan-500 text-xs transition"></i>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+                        <li>ซื้อน้ำดื่มจากร้านค้าภายในโรงเรียนเป็นประจำ</li>
+                        <li>พกขวดน้ำส่วนตัวมาโรงเรียนเพื่อเติมน้ำดื่ม</li>
+                        <li>ซื้อน้ำดื่มหลังรับประทานอาหารกลางวัน</li>
+                        <li>ซื้อน้ำดื่มหลังเรียนวิชาพละหรือทำกิจกรรมกลางแจ้ง</li>
+                    </ul>
+                </div>
+
+                <!-- FEEL -->
+                <div data-group="core" onclick="zoomEmpathyCard(this)" class="stagger-item stagger-4 empathy-card cursor-pointer group bg-white rounded-2xl p-4 border-t-4 border-indigo-500 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-base text-indigo-800 flex items-center gap-2">
+                            <i class="fa-solid fa-face-smile-beam text-indigo-500"></i> FEEL (สิ่งที่ลูกค้ารู้สึก)
+                        </h3>
+                        <i class="fa-solid fa-magnifying-glass-plus text-slate-300 group-hover:text-indigo-500 text-xs transition"></i>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+                        <li>รู้สึกกระหายน้ำหลังจากทำกิจกรรมหรือเรียนหนังสือ</li>
+                        <li>รู้สึกกังวลหากน้ำดื่มไม่มีความสะอาด</li>
+                        <li>รู้สึกไม่สะดวกเมื่อร้านน้ำดื่มมีคนต่อแถวยาว</li>
+                        <li>รู้สึกพึงพอใจเมื่อได้น้ำดื่มเย็นในราคาที่เหมาะสม</li>
+                    </ul>
+                </div>
+
+                <!-- PAIN -->
+                <div data-group="paingain" onclick="zoomEmpathyCard(this)" class="stagger-item stagger-5 empathy-card cursor-pointer group bg-rose-50/80 rounded-2xl p-4 border-t-4 border-rose-500 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-base text-rose-800 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-xmark text-rose-500"></i> PAIN (ปัญหาและอุปสรรค)
+                        </h3>
+                        <i class="fa-solid fa-magnifying-glass-plus text-rose-300 group-hover:text-rose-600 text-xs transition"></i>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>น้ำดื่มบางครั้งมีจำนวนไม่เพียงพอต่อนักเรียน</li>
+                        <li>ราคาน้ำดื่มบางชนิดสูงเกินไปสำหรับนักเรียน</li>
+                        <li>ต้องเสียเวลาต่อแถวซื้อน้ำในช่วงพักกลางวัน</li>
+                        <li>จุดจำหน่ายน้ำดื่มมีจำนวนจำกัดและอยู่ไกลจากบางอาคารเรียน</li>
+                        <li>บางครั้งน้ำดื่มไม่เย็นหรือสินค้าไม่เพียงพอ</li>
+                        <li>มีขยะจากขวดพลาสติกจำนวนมากหลังการบริโภค</li>
+                    </ul>
+                </div>
+
+                <!-- GAIN -->
+                <div data-group="paingain" onclick="zoomEmpathyCard(this)" class="stagger-item stagger-6 empathy-card cursor-pointer group bg-emerald-50/80 rounded-2xl p-4 border-t-4 border-emerald-500 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-base text-emerald-800 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> GAIN (สิ่งที่ลูกค้าต้องการได้รับ)
+                        </h3>
+                        <i class="fa-solid fa-magnifying-glass-plus text-emerald-300 group-hover:text-emerald-600 text-xs transition"></i>
+                    </div>
+                    <ul class="text-xs text-slate-700 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>น้ำดื่มสะอาด ปลอดภัย และมีคุณภาพตามมาตรฐาน</li>
+                        <li>น้ำดื่มราคาประหยัดและเหมาะสมกับเงินของนักเรียน</li>
+                        <li>มีน้ำดื่มเย็นให้เลือกซื้อ และสินค้าเพียงพอต่อความต้องการในทุกช่วงเวลา</li>
+                        <li>มีจุดจำหน่ายน้ำดื่มหลายจุดภายในโรงเรียน</li>
+                        <li>มีบริการเติมน้ำดื่มใส่ขวดส่วนตัวเพื่อลดขยะพลาสติก</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Conclusion Strip -->
+            <div class="mt-3.5 bg-sky-900 text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm flex items-center gap-2.5 shadow-sm">
+                <i class="fa-solid fa-lightbulb text-amber-300 shrink-0"></i>
+                <p><strong>สรุปผลการวิเคราะห์:</strong> ลูกค้ามีความต้องการน้ำดื่มที่สะอาด ปลอดภัย ราคาไม่แพง และหาซื้อได้สะดวกภายในโรงเรียน ปัญหาสำคัญคือจำนวนจุดจำหน่ายมีจำกัด บางช่วงเวลาไม่เพียงพอ และเสียเวลาต่อแถว จึงควรพัฒนาธุรกิจน้ำดื่มที่เน้นคุณภาพ ราคาเหมาะสม บริการรวดเร็ว และลดขยะพลาสติก</p>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 7: ตอนที่ 6 กิจกรรมปฏิบัติ (ขั้นตอนที่ 1-3)
+             ===================================================================== -->
+        <section id="slide-7" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-blue-700 bg-blue-100 px-3 py-1 rounded-lg">ตอนที่ 6 • กิจกรรมปฏิบัติ (ขั้นตอนที่ 1 - 3)</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">สำรวจและทำความเข้าใจลูกค้าจริง</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1">
+                <!-- Left Column: Step 1 & Step 2 -->
+                <div class="lg:col-span-5 flex flex-col gap-4">
+                    <div class="stagger-item stagger-1 bg-white rounded-2xl p-5 border border-sky-100 shadow-sm">
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs">ขั้นตอนที่ 1</span>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800">กำหนดผลิตภัณฑ์หรือบริการ</h3>
+                        </div>
+                        <p class="font-heading font-semibold text-sm sm:text-base text-sky-700 mb-2">
+                            “น้ำดื่มสะอาดและบริการเติมน้ำดื่มภายในโรงเรียน”
+                        </p>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-sky-50/70 p-3 rounded-xl border border-sky-100">
+                            <strong>เหตุผลที่เลือก:</strong> เนื่องจากนักเรียน ครู และบุคลากรภายในโรงเรียนจำเป็นต้องดื่มน้ำในชีวิตประจำวัน แต่บางครั้งพบปัญหาน้ำดื่มมีราคาแพง จุดจำหน่ายมีไม่เพียงพอ และต้องเสียเวลาต่อแถว จึงต้องการพัฒนาบริการน้ำดื่มที่สะอาด ราคาประหยัด และสะดวกต่อการใช้งาน
+                        </p>
+                    </div>
+
+                    <div class="stagger-item stagger-2 bg-white rounded-2xl p-5 border border-sky-100 shadow-sm flex-1">
+                        <div class="flex items-center gap-2.5 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-heading font-bold text-xs">ขั้นตอนที่ 2</span>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800">กำหนดกลุ่มเป้าหมาย</h3>
+                        </div>
+                        <div class="space-y-2.5 text-xs sm:text-sm">
+                            <div class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-users text-blue-600 mt-1"></i>
+                                <div><strong class="text-slate-800">กลุ่มเป้าหมายคือใคร:</strong> นักเรียนระดับมัธยมศึกษา ครู และบุคลากรภายในโรงเรียน</div>
+                            </div>
+                            <div class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-cake-candles text-blue-600 mt-1"></i>
+                                <div><strong class="text-slate-800">อายุโดยประมาณ:</strong> 16 - 60 ปี</div>
+                            </div>
+                            <div class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-cart-shopping text-blue-600 mt-1"></i>
+                                <div><strong class="text-slate-800">ความสนใจและพฤติกรรม:</strong> ชอบซื้อน้ำดื่มที่สะอาด ราคาไม่แพง และหาซื้อได้ง่าย มักซื้อน้ำดื่มในช่วงพักกลางวัน หลังเรียนวิชาพละ และหลังทำกิจกรรม</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Step 3 Interactive Interview Questions -->
+                <div class="stagger-item stagger-3 lg:col-span-7 bg-white rounded-2xl p-5 border border-sky-200 shadow-sm flex flex-col">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-heading font-bold text-xs">ขั้นตอนที่ 3</span>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800">สร้างคำถามสัมภาษณ์ <span class="text-xs font-normal text-slate-400">(คลิกที่ข้อเพื่อไฮไลต์)</span></h3>
+                        </div>
+                        
+                        <!-- Tabs -->
+                        <div class="flex bg-slate-100 p-1 rounded-xl">
+                            <button id="tabBtnCustom" onclick="switchQuestionTab('custom')" class="px-3 py-1.5 rounded-lg bg-sky-600 text-white font-heading font-semibold text-xs transition shadow-sm">
+                                คำถามที่กลุ่มออกแบบ (10 ข้อ)
+                            </button>
+                            <button id="tabBtnSample" onclick="switchQuestionTab('sample')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-heading font-semibold text-xs transition">
+                                คำถามตัวอย่าง (10 ข้อ)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 1: Custom 10 Questions -->
+                    <div id="tabContentCustom" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 overflow-y-auto slide-scroll pr-1">
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">1.</strong> ปกติท่านดื่มน้ำวันละประมาณกี่ขวด?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">2.</strong> ท่านนิยมซื้อน้ำดื่มแบบขวดหรือเติมน้ำใส่ขวดส่วนตัวมากกว่ากัน?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">3.</strong> ท่านคิดว่าจุดจำหน่ายน้ำดื่มในโรงเรียนมีเพียงพอหรือไม่?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">4.</strong> ท่านต้องการให้มีจุดบริการน้ำดื่มบริเวณใดของโรงเรียน?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">5.</strong> ท่านคิดว่าราคาน้ำดื่มขวดละกี่บาทจึงจะเหมาะสม?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">6.</strong> ท่านต้องการให้มีน้ำดื่มเย็นบริการตลอดทั้งวันหรือไม่?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">7.</strong> ท่านให้ความสำคัญกับความสะอาดของภาชนะและจุดเติมน้ำมากน้อยเพียงใด?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">8.</strong> ท่านคิดว่าการเติมน้ำใส่ขวดส่วนตัวช่วยลดขยะพลาสติกได้หรือไม่?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">9.</strong> หากมีตู้กดน้ำดื่มภายในโรงเรียน ท่านสนใจใช้บริการหรือไม่?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-sky-50/70 hover:bg-sky-100/80 border border-sky-100 transition flex items-start justify-between gap-2"><span><strong class="text-sky-700">10.</strong> ท่านมีข้อเสนอแนะเพิ่มเติมเกี่ยวกับการจำหน่ายน้ำดื่มในโรงเรียนอย่างไร?</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                    </div>
+
+                    <!-- Tab 2: Sample 10 Questions -->
+                    <div id="tabContentSample" class="hidden grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 overflow-y-auto slide-scroll pr-1">
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">1.</strong> ปัจจุบันท่านใช้ผลิตภัณฑ์หรือบริการประเภทนี้หรือไม่</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">2.</strong> ท่านพบปัญหาอะไรจากการใช้งาน</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">3.</strong> สิ่งใดที่ท่านให้ความสำคัญมากที่สุดในการเลือกซื้อ</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">4.</strong> ท่านต้องการให้ผลิตภัณฑ์หรือบริการมีลักษณะอย่างไร</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">5.</strong> ราคาที่ท่านยอมรับได้อยู่ที่ประมาณเท่าใด</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">6.</strong> ท่านมีความคาดหวังอะไรจากผลิตภัณฑ์นี้</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">7.</strong> ปัจจัยใดทำให้ท่านตัดสินใจซื้อสินค้า</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">8.</strong> ท่านเคยพบปัญหาใดที่ทำให้ไม่กลับมาใช้บริการอีก</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">9.</strong> ท่านต้องการให้ปรับปรุงส่วนใดมากที่สุด</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                        <div onclick="toggleStarQuestion(this)" class="q-item cursor-pointer p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 transition flex items-start justify-between gap-2"><span><strong class="text-blue-700">10.</strong> หากมีผลิตภัณฑ์ใหม่ ท่านอยากให้มีคุณสมบัติอะไรเพิ่มเติม</span><i class="fa-regular fa-star text-slate-300 mt-0.5"></i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 8: ตอนที่ 6 กิจกรรมปฏิบัติ (ขั้นตอนที่ 4-5)
+             ===================================================================== -->
+        <section id="slide-8" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-sky-700 bg-sky-100 px-3 py-1 rounded-lg">ตอนที่ 6 • กิจกรรมปฏิบัติ (ขั้นตอนที่ 4 - 5)</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">สรุปผลการสัมภาษณ์และการวิเคราะห์ข้อมูล</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </div>
+            </div>
+
+            <!-- Step 4 Summary Card -->
+            <div class="stagger-item stagger-1 bg-gradient-to-r from-blue-700 to-sky-600 text-white rounded-2xl p-4 sm:p-5 mb-4 shadow-md">
+                <div class="flex items-center gap-2 mb-1.5">
+                    <span class="px-2.5 py-0.5 rounded-md bg-white/20 text-white font-heading font-bold text-xs">ขั้นตอนที่ 4</span>
+                    <h3 class="font-heading font-bold text-base sm:text-lg">สรุปข้อมูลที่ได้จากการสัมภาษณ์</h3>
+                </div>
+                <p class="text-xs sm:text-sm text-sky-50 leading-relaxed">
+                    จากการสัมภาษณ์พบว่า ผู้ให้สัมภาษณ์ส่วนใหญ่ต้องการน้ำดื่มที่ <strong>สะอาดและปลอดภัย มีราคาประหยัด และสามารถหาซื้อได้ง่ายภายในโรงเรียน</strong> โดยส่วนใหญ่นิยมซื้อน้ำดื่มในช่วงพักกลางวันและหลังทำกิจกรรมต่าง ๆ นอกจากนี้ยังต้องการให้มี <strong>จุดบริการน้ำดื่มหลายจุด</strong> เพื่อลดปัญหาการต่อแถว และสนใจ <strong>บริการเติมน้ำใส่ขวดส่วนตัว</strong> เพื่อลดค่าใช้จ่ายและลดขยะพลาสติก
+                </p>
+            </div>
+
+            <!-- Step 5: Interactive Problem -> Solution Mapper -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-md bg-slate-800 text-white font-heading font-bold text-xs">ขั้นตอนที่ 5</span>
+                    <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800">วิเคราะห์ข้อมูล 3 มิติ <span class="text-xs font-normal text-sky-600">(นำเมาส์ชี้ที่ปัญหาเพื่อดูแนวทางแก้ไขที่คู่กัน)</span></h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                <!-- Col 1: Main Problems (4) -->
+                <div class="stagger-item stagger-2 bg-white rounded-2xl p-4 sm:p-5 border border-rose-200 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-2.5 pb-2.5 mb-3 border-b border-rose-100">
+                        <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading font-bold text-base text-rose-900">ปัญหาหลักของลูกค้า</h4>
+                            <span class="text-xs text-rose-600 font-medium">4 ประเด็นสำคัญ</span>
+                        </div>
+                    </div>
+                    <ol class="space-y-2.5 text-xs sm:text-sm text-slate-700 flex-1">
+                        <li onmouseenter="highlightPair(1)" onmouseleave="clearPair()" class="ps-item cursor-pointer flex items-start gap-2.5 bg-rose-50/70 p-2.5 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-rose-500 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                            <span>จุดจำหน่ายน้ำดื่มภายในโรงเรียนมีจำนวนจำกัด</span>
+                        </li>
+                        <li onmouseenter="highlightPair(2)" onmouseleave="clearPair()" class="ps-item cursor-pointer flex items-start gap-2.5 bg-rose-50/70 p-2.5 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-rose-500 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                            <span>ต้องเสียเวลาต่อแถวในช่วงพักกลางวัน</span>
+                        </li>
+                        <li onmouseenter="highlightPair(3)" onmouseleave="clearPair()" class="ps-item cursor-pointer flex items-start gap-2.5 bg-rose-50/70 p-2.5 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-rose-500 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                            <span>น้ำดื่มบางชนิดมีราคาสูง</span>
+                        </li>
+                        <li onmouseenter="highlightPair(4)" onmouseleave="clearPair()" class="ps-item cursor-pointer flex items-start gap-2.5 bg-rose-50/70 p-2.5 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-rose-500 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                            <span>บางครั้งน้ำดื่มมีไม่เพียงพอต่อความต้องการ</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Col 2: Main Needs (5) -->
+                <div class="stagger-item stagger-3 bg-white rounded-2xl p-4 sm:p-5 border border-sky-200 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-2.5 pb-2.5 mb-3 border-b border-sky-100">
+                        <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading font-bold text-base text-sky-900">ความต้องการหลักของลูกค้า</h4>
+                            <span class="text-xs text-sky-600 font-medium">5 ประเด็นสำคัญ</span>
+                        </div>
+                    </div>
+                    <ol class="space-y-2 text-xs sm:text-sm text-slate-700 flex-1">
+                        <li class="flex items-start gap-2.5 bg-sky-50/70 p-2 rounded-xl">
+                            <span class="w-5 h-5 rounded-full bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                            <span>ต้องการน้ำดื่มที่สะอาดและปลอดภัย</span>
+                        </li>
+                        <li class="flex items-start gap-2.5 bg-sky-50/70 p-2 rounded-xl">
+                            <span class="w-5 h-5 rounded-full bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                            <span>ต้องการน้ำดื่มที่มีราคาเหมาะสม</span>
+                        </li>
+                        <li class="flex items-start gap-2.5 bg-sky-50/70 p-2 rounded-xl">
+                            <span class="w-5 h-5 rounded-full bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                            <span>ต้องการจุดบริการน้ำดื่มที่อยู่ใกล้และเข้าถึงง่าย</span>
+                        </li>
+                        <li class="flex items-start gap-2.5 bg-sky-50/70 p-2 rounded-xl">
+                            <span class="w-5 h-5 rounded-full bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                            <span>ต้องการน้ำดื่มเย็นและมีสินค้าเพียงพอ</span>
+                        </li>
+                        <li class="flex items-start gap-2.5 bg-sky-50/70 p-2 rounded-xl">
+                            <span class="w-5 h-5 rounded-full bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">5</span>
+                            <span>ต้องการบริการเติมน้ำใส่ขวดส่วนตัว</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Col 3: Solutions (5) -->
+                <div class="stagger-item stagger-4 bg-white rounded-2xl p-4 sm:p-5 border border-emerald-200 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-2.5 pb-2.5 mb-3 border-b border-emerald-100">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading font-bold text-base text-emerald-900">แนวทางแก้ไขปัญหา</h4>
+                            <span class="text-xs text-emerald-600 font-medium">5 แนวทางปฏิบัติ</span>
+                        </div>
+                    </div>
+                    <ol class="space-y-2 text-xs sm:text-sm text-slate-700 flex-1">
+                        <li id="sol-1" class="ps-item flex items-start gap-2.5 bg-emerald-50/70 p-2 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                            <span>เพิ่มจุดจำหน่ายน้ำดื่มในบริเวณต่าง ๆ ของโรงเรียน</span>
+                        </li>
+                        <li id="sol-2" class="ps-item flex items-start gap-2.5 bg-emerald-50/70 p-2 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                            <span>จัดให้มีตู้กดน้ำดื่มที่สะอาดและผ่านการตรวจสอบคุณภาพ</span>
+                        </li>
+                        <li id="sol-3" class="ps-item flex items-start gap-2.5 bg-emerald-50/70 p-2 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                            <span>กำหนดราคาน้ำดื่มให้เหมาะสมกับกำลังซื้อของนักเรียน</span>
+                        </li>
+                        <li id="sol-4" class="ps-item flex items-start gap-2.5 bg-emerald-50/70 p-2 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                            <span>จัดเตรียมน้ำดื่มให้เพียงพอในช่วงเวลาพัก</span>
+                        </li>
+                        <li id="sol-5" class="ps-item flex items-start gap-2.5 bg-emerald-50/70 p-2 rounded-xl border border-transparent transition-all duration-200">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">5</span>
+                            <span>ส่งเสริมการใช้ขวดน้ำส่วนตัวเพื่อลดขยะพลาสติก</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             SLIDE 9: ตอนที่ 6 การนำเสนอแนวคิดธุรกิจ (ขั้นตอนที่ 6 - บทสรุป)
+             ===================================================================== -->
+        <section id="slide-9" class="slide-container flex-col w-full min-h-[73vh] glass-card rounded-3xl p-5 sm:p-8">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-4 mb-5">
+                <div>
+                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-lg">ตอนที่ 6 • ขั้นตอนที่ 6 (บทสรุปแนวคิดธุรกิจ)</span>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-slate-900 mt-1">การนำเสนอแนวคิด: ธุรกิจน้ำดื่มสะอาดและบริการเติมน้ำ</h2>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 text-white flex items-center justify-center text-xl shadow-md">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+            </div>
+
+            <!-- Business Concept Hero Box -->
+            <div class="stagger-item stagger-1 bg-gradient-to-r from-sky-900 via-blue-900 to-sky-800 text-white rounded-2xl p-5 mb-5 shadow-lg relative overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-sky-400/20 text-sky-200 font-heading font-semibold text-xs mb-2">
+                            <i class="fa-solid fa-rocket mr-1"></i> ผลิตภัณฑ์หรือบริการที่กลุ่มต้องการพัฒนา
+                        </span>
+                        <h3 class="font-heading font-bold text-lg sm:text-xl text-white mb-1">
+                            พัฒนาธุรกิจจำหน่ายน้ำดื่มสะอาดภายในโรงเรียน โดยมีทั้งน้ำดื่มบรรจุขวดหลายขนาดและบริการเติมน้ำดื่มใส่ขวดส่วนตัว
+                        </h3>
+                        <p class="text-xs sm:text-sm text-sky-100 leading-relaxed">
+                            พร้อมจัดตั้งจุดบริการในบริเวณที่นักเรียนและครูสามารถเข้าถึงได้สะดวก
+                        </p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
+                            <i class="fa-solid fa-bottle-water text-sky-300 text-lg block mb-0.5"></i>
+                            <span class="text-xs font-heading">หลายขนาด</span>
+                        </div>
+                        <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
+                            <i class="fa-solid fa-faucet-drip text-cyan-300 text-lg block mb-0.5"></i>
+                            <span class="text-xs font-heading">จุดเติมน้ำ</span>
+                        </div>
+                        <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
+                            <i class="fa-solid fa-leaf text-emerald-300 text-lg block mb-0.5"></i>
+                            <span class="text-xs font-heading">ลดขยะ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 Columns: 6 Highlights & 6 Customer Benefits -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1">
+                <!-- Left: 6 Highlights -->
+                <div class="stagger-item stagger-2 bg-white rounded-2xl p-5 border border-sky-200 shadow-sm">
+                    <h3 class="font-heading font-bold text-base sm:text-lg text-sky-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-gem text-sky-500"></i>
+                        <span>จุดเด่นของผลิตภัณฑ์หรือบริการ (6 ข้อ)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+                        <div class="tilt-card p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">1</span>
+                            <span class="text-slate-800 font-medium">น้ำดื่มสะอาด มีคุณภาพ และผ่านมาตรฐานความปลอดภัย</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                            <span class="text-slate-800 font-medium">มีราคาประหยัด เหมาะสมกับนักเรียน</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                            <span class="text-slate-800 font-medium">มีน้ำดื่มเย็นและน้ำดื่มอุณหภูมิปกติให้เลือก</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">4</span>
+                            <span class="text-slate-800 font-medium">มีบริการเติมน้ำใส่ขวดส่วนตัว</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">5</span>
+                            <span class="text-slate-800 font-medium">มีจุดจำหน่ายหลายจุดภายในโรงเรียน</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">6</span>
+                            <span class="text-slate-800 font-medium">ช่วยลดการใช้ขวดพลาสติกและลดปริมาณขยะ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: 6 Customer Benefits -->
+                <div class="stagger-item stagger-3 bg-white rounded-2xl p-5 border border-emerald-200 shadow-sm">
+                    <h3 class="font-heading font-bold text-base sm:text-lg text-emerald-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-heart-circle-check text-emerald-500"></i>
+                        <span>ประโยชน์ที่ลูกค้าจะได้รับ (6 ข้อ)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+                        <div class="tilt-card p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">1</span>
+                            <span class="text-slate-800 font-medium">ได้ดื่มน้ำที่สะอาดและปลอดภัยต่อสุขภาพ</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                            <span class="text-slate-800 font-medium">ประหยัดค่าใช้จ่ายในการซื้อน้ำดื่ม</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                            <span class="text-slate-800 font-medium">สามารถเข้าถึงน้ำดื่มได้สะดวกและรวดเร็ว</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">4</span>
+                            <span class="text-slate-800 font-medium">ลดเวลาในการต่อแถวซื้อน้ำดื่ม</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">5</span>
+                            <span class="text-slate-800 font-medium">ช่วยลดปริมาณขยะพลาสติกภายในโรงเรียน</span>
+                        </div>
+                        <div class="tilt-card p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0">6</span>
+                            <span class="text-slate-800 font-medium">สร้างสุขอนามัยที่ดีให้แก่นักเรียน ครู และบุคลากร</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Celebration Footer -->
+            <div class="mt-4 pt-3 border-t border-sky-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-slate-600">
+                <span class="font-heading font-semibold text-sky-800"><i class="fa-solid fa-sparkles text-sky-500 mr-1.5"></i>จบการนำเสนอ • ขอบคุณที่รับชมและรับฟัง</span>
+                <div class="flex items-center gap-2">
+                    <button onclick="launchConfetti()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-heading font-semibold text-xs transition shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-champagne-glasses"></i> เสร็จสิ้นการนำเสนอ 🎉
+                    </button>
+                    <button onclick="goToSlide(1)" class="px-3.5 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-800 font-heading font-semibold text-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> หน้าแรก
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Presentation Controls Bar -->
+    <footer class="relative z-20 w-full bg-white/85 backdrop-blur-md border-t border-sky-100 px-4 sm:px-8 py-2.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <button id="prevBtn" onclick="prevSlide()" class="px-4 sm:px-5 py-2 rounded-xl bg-white hover:bg-sky-50 disabled:opacity-40 disabled:pointer-events-none text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-300 font-heading font-semibold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span>ย้อนกลับ</span>
+            </button>
+
+            <!-- Slide Dots Indicator -->
+            <div id="slideDots" class="hidden md:flex items-center gap-2"></div>
+
+            <!-- Keyboard Shortcuts Legend -->
+            <div class="text-[11px] text-slate-500 hidden lg:flex items-center gap-2 font-heading">
+                <span>คีย์ลัด:</span>
+                <span><kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700">→</kbd> เปลี่ยนหน้า</span>
+                <span>• <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700">L</kbd> เลเซอร์</span>
+                <span>• <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700">N</kbd> สคริปต์</span>
+                <span>• <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700">M</kbd> สารบัญ</span>
+            </div>
+
+            <button id="nextBtn" onclick="nextSlide()" class="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 disabled:opacity-40 disabled:pointer-events-none text-white font-heading font-semibold text-xs sm:text-sm flex items-center gap-2 transition shadow-md shadow-sky-500/20">
+                <span>ถัดไป</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Speaker Notes Slide-up Drawer -->
+    <div id="speakerNotesDrawer" class="fixed bottom-16 right-4 sm:right-8 z-40 w-[92vw] max-w-md bg-slate-900/95 backdrop-blur-md text-white rounded-2xl p-4 sm:p-5 shadow-2xl border border-sky-500/40 hidden transition-all">
+        <div class="flex items-center justify-between border-b border-slate-700 pb-2.5 mb-2.5">
+            <div class="flex items-center gap-2 text-amber-300 font-heading font-semibold text-sm">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <span>สคริปต์แนะนำสำหรับผู้บรรยาย (สไลด์ <span id="noteSlideNum">1</span>)</span>
+            </div>
+            <button onclick="toggleNotes()" class="text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p id="speakerNoteText" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
+    </div>
+
+    <!-- Empathy Map Focus Zoom Modal -->
+    <div id="empathyZoomModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4" onclick="if(event.target === this) closeEmpathyZoom()">
+        <div id="empathyZoomContent" class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border-t-8 border-sky-500 relative">
+            <button onclick="closeEmpathyZoom()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="empathyZoomBody"></div>
+        </div>
+    </div>
+
+    <!-- Table of Contents (TOC) Modal -->
+    <div id="tocModal" class="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-sm hidden items-center justify-center p-4" onclick="if(event.target === this) toggleTOC()">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-sky-100">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg text-slate-800">สารบัญสไลด์นำเสนอ (9 สไลด์)</h3>
+                </div>
+                <button onclick="toggleTOC()" class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="tocList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[65vh] overflow-y-auto slide-scroll pr-1"></div>
+        </div>
+    </div>
+
+    <script>
+        // Slide Metadata & Speaker Scripts
+        const slidesData = [
+            { 
+                num: 1, 
+                title: "หน้าปก: การทำความเข้าใจกลุ่มเป้าหมายลูกค้า", 
+                subtitle: "Empathize & ธุรกิจน้ำดื่มในโรงเรียน",
+                note: "สวัสดีคุณครูและเพื่อนๆ ทุกคน วันนี้กลุ่มของพวกเราจะมานำเสนอผลงานแบบฝึกหัดหน่วยที่ 2 เรื่อง 'การทำความเข้าใจกลุ่มเป้าหมายลูกค้า (Empathize)' โดยประยุกต์ใช้กับการพัฒนาธุรกิจน้ำดื่มสะอาดและบริการเติมน้ำดื่มภายในโรงเรียนครับ"
+            },
+            { 
+                num: 2, 
+                title: "ตอนที่ 1: ความรู้ความเข้าใจเบื้องต้น", 
+                subtitle: "ความหมาย ความสำคัญ และ Stated vs Real Needs",
+                note: "เริ่มต้นที่ตอนที่ 1 ครับ Empathize คือการเอาใจเขามาใส่ใจเราโดยปราศจากอคติ ซึ่งสำคัญมากเพราะช่วยให้พัฒนาสินค้าได้ตรงจุด สร้างความได้เปรียบ และสร้างความภักดีต่อแบรนด์ ที่สำคัญคือต้องแยกให้ออกระหว่างสิ่งที่ลูกค้าพูด (Stated Needs) กับความต้องการที่แท้จริง (Real Needs) ครับ"
+            },
+            { 
+                num: 3, 
+                title: "ตอนที่ 2: ผู้ใช้งานสุดโต่ง (Extreme Users)", 
+                subtitle: "3 กลุ่มตัวอย่าง และกรณีศึกษาแอปสั่งอาหาร",
+                note: "ตอนที่ 2 คือการศึกษาผู้ใช้งานสุดโต่ง (Extreme Users) ซึ่งเป็นคนที่มีพฤติกรรมหรือข้อจำกัดต่างจากคนทั่วไป เช่น คนที่ใช้บ่อยมาก มือใหม่ หรือผู้สูงอายุ การศึกษาคนกลุ่มนี้ช่วยให้เราเห็นจุดบกพร่องของบริการได้ชัดเจนขึ้นครับ"
+            },
+            { 
+                num: 4, 
+                title: "ตอนที่ 3: วิธีการสร้างความเข้าใจกลุ่มเป้าหมาย", 
+                subtitle: "5 วิธีเก็บข้อมูล & กิจกรรมร้านเครื่องดื่ม",
+                note: "ตอนที่ 3 เครื่องมือในการเก็บข้อมูลมี 5 วิธีหลัก ได้แก่ การสัมภาษณ์ การสังเกตพฤติกรรม แบบสอบถาม การทดลองใช้งานจริง และการสนทนากลุ่ม ซึ่งหากเราจะเปิดร้านเครื่องดื่มในวิทยาลัย เราจะเลือกใช้การสัมภาษณ์ แบบสอบถาม และการสังเกตพฤติกรรมควบคู่กันครับ"
+            },
+            { 
+                num: 5, 
+                title: "ตอนที่ 4: การวิเคราะห์กลุ่มเป้าหมายลูกค้า", 
+                subtitle: "กรณีศึกษาร้านเครื่องดื่มในวิทยาลัย 5 มิติ",
+                note: "ตอนที่ 4 จากกรณีศึกษาธุรกิจร้านเครื่องดื่มในวิทยาลัย พบว่านักเรียนมีเวลาพักจำกัดและไม่อยากต่อคิวนาน ปัจจัยตัดสินใจซื้อคือ ราคา รสชาติ ความสะดวก และคุณภาพ แนวทางแก้ไขคือเปิดระบบสั่งล่วงหน้าผ่านมือถือและเพิ่มเมนูเพื่อสุขภาพครับ"
+            },
+            { 
+                num: 6, 
+                title: "ตอนที่ 5: แผนภูมิแห่งความเข้าใจ (Empathy Map)", 
+                subtitle: "Say, Think, Do, Feel, Pain & Gain ธุรกิจน้ำดื่ม",
+                note: "ตอนที่ 5 เราได้สร้าง Empathy Map ของนักเรียน ครู และบุคลากรในโรงเรียน (สามารถคลิกที่แต่ละช่องเพื่อขยายให้อ่านชัดๆ ได้ครับ) สรุปได้ว่าลูกค้าต้องการน้ำดื่มสะอาด ราคาประหยัด เข้าถึงง่าย และอยากลดขยะขวดพลาสติกครับ"
+            },
+            { 
+                num: 7, 
+                title: "ตอนที่ 6: สำรวจและทำความเข้าใจลูกค้าจริง", 
+                subtitle: "ขั้นตอนที่ 1-3 และแบบสัมภาษณ์ 20 ข้อ",
+                note: "ตอนที่ 6 กิจกรรมปฏิบัติจริง ขั้นตอนที่ 1-3 เรากำหนดบริการคือ 'น้ำดื่มสะอาดและบริการเติมน้ำดื่มภายในโรงเรียน' กลุ่มเป้าหมายอายุ 16-60 ปี และออกแบบคำถามสัมภาษณ์เพิ่มเติม 10 ข้อ ควบคู่กับคำถามตัวอย่างอีก 10 ข้อครับ"
+            },
+            { 
+                num: 8, 
+                title: "ตอนที่ 6: การวิเคราะห์ข้อมูลและแนวทางแก้ไข", 
+                subtitle: "ขั้นตอนที่ 4-5 ปัญหา ความต้องการ และทางออก",
+                note: "ขั้นตอนที่ 4 และ 5 เมื่อนำข้อมูลสัมภาษณ์มาวิเคราะห์ เราสรุปปัญหาหลักได้ 4 ข้อ ความต้องการหลัก 5 ข้อ และกำหนดแนวทางแก้ไข 5 ข้อ เช่น การเพิ่มจุดบริการ ตู้กดน้ำที่ได้มาตรฐาน และส่งเสริมการพกขวดน้ำส่วนตัวครับ"
+            },
+            { 
+                num: 9, 
+                title: "ตอนที่ 6: การนำเสนอแนวคิดธุรกิจ (บทสรุป)", 
+                subtitle: "ขั้นตอนที่ 6 จุดเด่น 6 ข้อ & ประโยชน์ 6 ข้อ",
+                note: "สุดท้าย ขั้นตอนที่ 6 แนวคิดธุรกิจของเราคือจำหน่ายน้ำดื่มบรรจุขวดหลายขนาดควบคู่บริการเติมน้ำใส่ขวดส่วนตัว มีจุดเด่น 6 ข้อ และสร้างประโยชน์ให้ลูกค้าและโรงเรียน 6 ข้อ ทั้งความสะอาด ประหยัด สะดวก และช่วยลดขยะพลาสติก ขอบคุณครับ!"
+            }
+        ];
+
+        let currentSlide = 1;
+        const totalSlides = slidesData.length;
+        let currentFontScale = 1;
+
+        // Initialize UI on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            createAmbientBubbles();
+            renderSegmentedProgress();
+            renderDots();
+            renderTOC();
+            initTiltCards();
+            updateSlideUI();
+        });
+
+        // Create Floating Water Bubbles in Background
+        function createAmbientBubbles() {
+            const container = document.getElementById('bubbleContainer');
+            const bubbleCount = 14;
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.floor(Math.random() * 28) + 12; // 12px - 40px
+                const left = Math.floor(Math.random() * 96) + 2;
+                const duration = Math.floor(Math.random() * 12) + 12; // 12s - 24s
+                const delay = Math.floor(Math.random() * 14);
+                
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${left}vw`;
+                bubble.style.animationDuration = `${duration}s`;
+                bubble.style.animationDelay = `-${delay}s`;
+                container.appendChild(bubble);
+            }
+        }
+
+        // Subtle 3D Tilt Effect on Cards
+        function initTiltCards() {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -4;
+                    const rotateY = ((x - centerX) / centerX) * 4;
+                    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        }
+
+        // Navigate to specific slide
+        function goToSlide(n) {
+            if (n < 1 || n > totalSlides) return;
+            document.querySelectorAll('.slide-container').forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            currentSlide = n;
+            const targetSlide = document.getElementById(`slide-${currentSlide}`);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+            }
+            updateSlideUI();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) goToSlide(currentSlide - 1);
+        }
+
+        // Render Segmented Clickable Progress Bar
+        function renderSegmentedProgress() {
+            const bar = document.getElementById('segmentedProgress');
+            bar.innerHTML = '';
+            slidesData.forEach(s => {
+                const seg = document.createElement('button');
+                seg.className = 'progress-seg h-1.5 flex-1 rounded-full bg-sky-100 hover:bg-sky-300 transition-all duration-300 cursor-pointer';
+                seg.title = `สไลด์ที่ ${s.num}: ${s.title}`;
+                seg.onclick = () => goToSlide(s.num);
+                bar.appendChild(seg);
+            });
+        }
+
+        // Update Counter, Progress, Buttons, Dots, TOC, Speaker Notes
+        function updateSlideUI() {
+            document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+            
+            document.querySelectorAll('.progress-seg').forEach((seg, idx) => {
+                if (idx + 1 <= currentSlide) {
+                    seg.className = 'progress-seg h-1.5 flex-1 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 transition-all duration-300 cursor-pointer';
+                } else {
+                    seg.className = 'progress-seg h-1.5 flex-1 rounded-full bg-sky-100 hover:bg-sky-200 transition-all duration-300 cursor-pointer';
+                }
+            });
+
+            document.getElementById('prevBtn').disabled = (currentSlide === 1);
+            document.getElementById('nextBtn').disabled = (currentSlide === totalSlides);
+
+            // Update Dots
+            document.querySelectorAll('.slide-dot').forEach((dot, idx) => {
+                if (idx + 1 === currentSlide) {
+                    dot.className = 'slide-dot w-7 h-2.5 rounded-full bg-sky-600 transition-all duration-300 cursor-pointer';
+                } else {
+                    dot.className = 'slide-dot w-2.5 h-2.5 rounded-full bg-sky-200 hover:bg-sky-400 transition-all duration-300 cursor-pointer';
+                }
+            });
+
+            // Update TOC active item
+            document.querySelectorAll('.toc-item').forEach((item, idx) => {
+                if (idx + 1 === currentSlide) {
+                    item.classList.add('bg-sky-50', 'border-sky-400', 'ring-1', 'ring-sky-400');
+                    item.classList.remove('border-slate-200');
+                } else {
+                    item.classList.remove('bg-sky-50', 'border-sky-400', 'ring-1', 'ring-sky-400');
+                    item.classList.add('border-slate-200');
+                }
+            });
+
+            // Update Speaker Notes
+            const currentMeta = slidesData[currentSlide - 1];
+            document.getElementById('noteSlideNum').textContent = currentSlide;
+            document.getElementById('speakerNoteText').textContent = currentMeta ? currentMeta.note : '';
+        }
+
+        function renderDots() {
+            const dotsContainer = document.getElementById('slideDots');
+            dotsContainer.innerHTML = '';
+            slidesData.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = 'slide-dot';
+                btn.title = `สไลด์ที่ ${s.num}: ${s.title}`;
+                btn.onclick = () => goToSlide(s.num);
+                dotsContainer.appendChild(btn);
+            });
+        }
+
+        function renderTOC() {
+            const tocList = document.getElementById('tocList');
+            tocList.innerHTML = '';
+            slidesData.forEach(s => {
+                const div = document.createElement('button');
+                div.className = 'toc-item text-left p-3 rounded-2xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50/60 transition flex items-start gap-3';
+                div.onclick = () => {
+                    goToSlide(s.num);
+                    toggleTOC();
+                };
+                div.innerHTML = `
+                    <span class="w-7 h-7 rounded-xl bg-sky-600 text-white font-heading font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${s.num}</span>
+                    <div>
+                        <p class="font-heading font-semibold text-xs sm:text-sm text-slate-800 leading-snug">${s.title}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">${s.subtitle}</p>
+                    </div>
+                `;
+                tocList.appendChild(div);
+            });
+        }
+
+        function toggleTOC() {
+            const modal = document.getElementById('tocModal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function toggleNotes() {
+            const drawer = document.getElementById('speakerNotesDrawer');
+            const btn = document.getElementById('notesBtn');
+            drawer.classList.toggle('hidden');
+            btn.classList.toggle('bg-amber-100');
+            btn.classList.toggle('border-amber-400');
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // Font Size Scaler
+        function adjustFontSize(delta) {
+            if (delta === 0) {
+                currentFontScale = 1;
+            } else {
+                currentFontScale = Math.min(1.22, Math.max(0.86, currentFontScale + delta));
+            }
+            document.documentElement.style.setProperty('--font-scale', currentFontScale);
+        }
+
+        // Stopwatch Timer Logic
+        let timerSeconds = 0;
+        let timerInterval = null;
+        function toggleTimer() {
+            const btn = document.getElementById('timerToggleBtn');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i>';
+            } else {
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                    const secs = String(timerSeconds % 60).padStart(2, '0');
+                    document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+                }, 1000);
+                btn.innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i>';
+            }
+        }
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerSeconds = 0;
+            document.getElementById('timerDisplay').textContent = '00:00';
+            document.getElementById('timerToggleBtn').innerHTML = '<i class="fa-solid fa-play text-[10px]"></i>';
+        }
+
+        // Virtual Laser Pointer Logic
+        let laserActive = false;
+        const laserDot = document.getElementById('laserDot');
+        let lastTrailTime = 0;
+
+        function toggleLaser() {
+            laserActive = !laserActive;
+            const btn = document.getElementById('laserBtn');
+            if (laserActive) {
+                document.body.classList.add('laser-active');
+                laserDot.style.display = 'block';
+                btn.classList.add('bg-rose-600', 'text-white', 'border-rose-600');
+                btn.classList.remove('bg-white', 'text-slate-700');
+            } else {
+                document.body.classList.remove('laser-active');
+                laserDot.style.display = 'none';
+                btn.classList.remove('bg-rose-600', 'text-white', 'border-rose-600');
+                btn.classList.add('bg-white', 'text-slate-700');
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!laserActive) return;
+            laserDot.style.left = `${e.clientX}px`;
+            laserDot.style.top = `${e.clientY}px`;
+
+            const now = Date.now();
+            if (now - lastTrailTime > 22) {
+                lastTrailTime = now;
+                const trail = document.createElement('div');
+                trail.className = 'laser-trail';
+                trail.style.left = `${e.clientX}px`;
+                trail.style.top = `${e.clientY}px`;
+                document.body.appendChild(trail);
+                setTimeout(() => trail.remove(), 380);
+            }
+        });
+
+        // Slide 2: Interactive Stated vs Real Needs Highlight
+        let needsFocused = false;
+        function toggleNeedsDeepDive() {
+            needsFocused = !needsFocused;
+            const stated = document.getElementById('statedNeedBox');
+            const real = document.getElementById('realNeedBox');
+            const label = document.getElementById('needsToggleText');
+            if (needsFocused) {
+                stated.style.opacity = '0.45';
+                real.classList.add('ring-2', 'ring-sky-500', 'scale-[1.02]', 'shadow-md');
+                label.textContent = 'แสดงทั้งคู่';
+            } else {
+                stated.style.opacity = '1';
+                real.classList.remove('ring-2', 'ring-sky-500', 'scale-[1.02]', 'shadow-md');
+                label.textContent = 'เน้นความต้องการแท้จริง';
+            }
+        }
+
+        // Slide 3: Select Extreme Card
+        function selectExtremeCard(el) {
+            const wasSelected = el.classList.contains('ring-2');
+            document.querySelectorAll('.extreme-card').forEach(c => {
+                c.classList.remove('ring-2', 'ring-sky-500', 'scale-[1.02]');
+            });
+            if (!wasSelected) {
+                el.classList.add('ring-2', 'ring-sky-500', 'scale-[1.02]');
+            }
+        }
+
+        // Slide 6: Empathy Map Filter & Click-to-Zoom
+        function highlightEmpathy(group, btnEl) {
+            const cards = document.querySelectorAll('.empathy-card');
+            const btns = document.querySelectorAll('.empathy-btn');
+
+            btns.forEach(b => {
+                b.className = 'empathy-btn px-2.5 py-1 rounded-lg bg-white hover:bg-sky-50 text-slate-600 border border-slate-200 font-heading font-medium transition';
+            });
+            btnEl.className = 'empathy-btn px-2.5 py-1 rounded-lg bg-sky-600 text-white font-heading font-medium transition shadow-sm';
+
+            cards.forEach(card => {
+                if (group === 'all' || card.dataset.group === group) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                } else {
+                    card.style.opacity = '0.32';
+                    card.style.transform = 'scale(0.98)';
+                }
+            });
+        }
+
+        function zoomEmpathyCard(cardEl) {
+            const modal = document.getElementById('empathyZoomModal');
+            const body = document.getElementById('empathyZoomBody');
+            const titleHTML = cardEl.querySelector('h3').innerHTML;
+            const listHTML = cardEl.querySelector('ul').innerHTML;
+            
+            body.innerHTML = `
+                <h3 class="font-heading font-bold text-xl sm:text-2xl text-slate-900 mb-4 flex items-center gap-2.5">${titleHTML}</h3>
+                <ul class="text-base sm:text-lg text-slate-700 space-y-2.5 list-disc list-inside leading-relaxed">${listHTML}</ul>
+            `;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEmpathyZoom() {
+            const modal = document.getElementById('empathyZoomModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Slide 7: Question Tabs & Star Bookmarking
+        function switchQuestionTab(tab) {
+            const customContent = document.getElementById('tabContentCustom');
+            const sampleContent = document.getElementById('tabContentSample');
+            const customBtn = document.getElementById('tabBtnCustom');
+            const sampleBtn = document.getElementById('tabBtnSample');
+
+            if (tab === 'custom') {
+                customContent.classList.remove('hidden');
+                customContent.classList.add('grid');
+                sampleContent.classList.add('hidden');
+                sampleContent.classList.remove('grid');
+
+                customBtn.className = 'px-3 py-1.5 rounded-lg bg-sky-600 text-white font-heading font-semibold text-xs transition shadow-sm';
+                sampleBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-heading font-semibold text-xs transition';
+            } else {
+                sampleContent.classList.remove('hidden');
+                sampleContent.classList.add('grid');
+                customContent.classList.add('hidden');
+                customContent.classList.remove('grid');
+
+                sampleBtn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-heading font-semibold text-xs transition shadow-sm';
+                customBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-heading font-semibold text-xs transition';
+            }
+        }
+
+        function toggleStarQuestion(el) {
+            const icon = el.querySelector('i');
+            el.classList.toggle('ring-2');
+            el.classList.toggle('ring-amber-400');
+            el.classList.toggle('bg-amber-50');
+            if (icon.classList.contains('fa-regular')) {
+                icon.classList.remove('fa-regular', 'text-slate-300');
+                icon.classList.add('fa-solid', 'text-amber-500');
+            } else {
+                icon.classList.remove('fa-solid', 'text-amber-500');
+                icon.classList.add('fa-regular', 'text-slate-300');
+            }
+        }
+
+        // Slide 8: Problem-Solution Interactive Connection
+        function highlightPair(problemIdx) {
+            clearPair();
+            const map = {
+                1: ['sol-1'],
+                2: ['sol-1', 'sol-2'],
+                3: ['sol-3', 'sol-5'],
+                4: ['sol-4', 'sol-2']
+            };
+            const targets = map[problemIdx] || [];
+            targets.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('ps-highlight');
+            });
+        }
+
+        function clearPair() {
+            document.querySelectorAll('.ps-item').forEach(el => {
+                el.classList.remove('ps-highlight');
+            });
+        }
+
+        // Slide 9: Celebration Confetti Effect
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#0284c7', '#38bdf8', '#2563eb', '#10b981', '#f59e0b', '#ec4899'];
+            const pieces = [];
+            for (let i = 0; i < 130; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height * 0.65,
+                    vx: (Math.random() - 0.5) * 18,
+                    vy: (Math.random() - 1) * 18 - 4,
+                    size: Math.random() * 8 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 12
+                });
+            }
+
+            let frame = 0;
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.45; // gravity
+                    p.vx *= 0.98;
+                    p.rotation += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    ctx.restore();
+                });
+
+                frame++;
+                if (frame < 110) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animateConfetti();
+        }
+
+        // Keyboard Navigation & Presenter Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if (document.activeElement.tagName !== 'BUTTON') {
+                    e.preventDefault();
+                    nextSlide();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'm' || e.key === 'M') {
+                toggleTOC();
+            } else if (e.key === 'l' || e.key === 'L') {
+                toggleLaser();
+            } else if (e.key === 'n' || e.key === 'N') {
+                toggleNotes();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullScreen();
+            } else if (e.key === 'Escape') {
+                document.getElementById('tocModal').classList.add('hidden');
+                document.getElementById('tocModal').classList.remove('flex');
+                closeEmpathyZoom();
+                if (laserActive) toggleLaser();
+            }
+        });
+
+        // Touch Swipe Support for Mobile / Tablet
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const swipeThreshold = 60;
+            if (touchEndX < touchStartX - swipeThreshold) nextSlide();
+            else if (touchEndX > touchStartX + swipeThreshold) prevSlide();
+        }, { passive: true });
+    </script>
+</body>
+</html>
